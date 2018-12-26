@@ -1,8 +1,8 @@
 <template>
-  <div class="uk-container uk-container-small uk-margin-medium">
+  <div class="uk-container uk-container-small uk-margin-medium uk-animation-fade">
     <Search v-on:search-started="onSearchStarted" v-on:search-ended="onSearchEnded"/>
     <ul class="uk-list uk-list-divider"></ul>
-    <div v-if="loading" uk-spinner></div>
+    <div v-if="loading" class="spinner" uk-spinner="ratio: 2"></div>
     <Results v-else-if="entries.length > 0" :entries="entries"/>
     <NoResults v-else-if="loaded"/>
   </div>
@@ -45,3 +45,11 @@ export default {
   }
 };
 </script>
+
+<style scoped>
+.spinner {
+  width: 100%;
+  text-align: center;
+}
+</style>
+

@@ -1,5 +1,5 @@
 <template>
-  <ul class="uk-list uk-list-divider">
+  <ul class="uk-list uk-list-divider uk-animation-fade">
     <Result v-for="entry in entries" :key="entry.traditional" :entry="entry"/>
   </ul>
 </template>
