@@ -1,10 +1,10 @@
 <template>
   <li>
     <h3>
-      <Simplified :value="entry.simplified" class="search-result-value"/>
-      <Traditional :value="entry.traditional" class="search-result-value"/>
-      <Pinyin :value="entry.pinyin"/>
-      <Copy :entry="entry"/>
+      <Simplified :value="entry.simplified" :tones="entry.tones" class="search-result-value"/>
+      <span class="uk-text-muted separator">|</span>
+      <Traditional :value="entry.traditional" :tones="entry.tones"/>
+      <Pinyin :value="entry.pinyin" class="pinyin"/>
     </h3>
     <English :values="entry.english"/>
   </li>
@@ -31,8 +31,11 @@ export default {
 </script>
 
 <style scoped>
-  .search-result-value {
-    margin-right: 10px;
+  .separator {
+    margin: 0 10px;
+  }
+  .pinyin {
+    margin-left: 10px;
   }
 </style>
 

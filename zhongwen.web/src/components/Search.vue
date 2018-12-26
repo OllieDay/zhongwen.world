@@ -17,20 +17,29 @@ export default {
   },
   methods: {
     search: function() {
+      const started = Date.now();
       this.$emit("search-started");
       axios
         .get(`http://localhost/api/search/${this.terms}`)
         .then(response => {
-          this.$emit("search-ended", {
-            success: true,
-            entries: response.data
-          });
+          const ended = Date.now();
+          const delay = ended - started;
+          setTimeout(() => {
+            this.$emit("search-ended", {
+              success: true,
+              entries: response.data
+            });
+          }, 500);
         })
         .catch(response => {
-          this.$emit("search-ended", {
-            success: false,
-            error: response
-          });
+          const ended = Date.now();
+          const delay = ended - started;
+          setTimeout(() => {
+            this.$emit("search-ended", {
+              success: false,
+              error: response
+            });
+          }, 500);
         });
     }
   }
