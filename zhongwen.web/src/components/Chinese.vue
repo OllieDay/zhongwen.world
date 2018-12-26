@@ -13,7 +13,7 @@
 import Character from "./Character.vue";
 
 export default {
-  name: "Traditional",
+  name: "Chinese",
   components: {
     Character
   },

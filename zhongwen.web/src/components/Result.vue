@@ -1,9 +1,9 @@
 <template>
   <li>
     <h3>
-      <Simplified :value="entry.simplified" :tones="entry.tones" class="search-result-value"/>
+      <Chinese :value="entry.simplified" :tones="entry.tones"/>
       <span class="uk-text-muted separator">|</span>
-      <Traditional :value="entry.traditional" :tones="entry.tones"/>
+      <Chinese :value="entry.traditional" :tones="entry.tones"/>
       <Pinyin :value="entry.pinyin" class="pinyin"/>
     </h3>
     <English :values="entry.english"/>
@@ -11,20 +11,16 @@
 </template>
 
 <script>
-import Traditional from "./Traditional.vue";
-import Simplified from "./Simplified.vue";
+import Chinese from "./Chinese.vue";
 import Pinyin from "./Pinyin.vue";
 import English from "./English.vue";
-import Copy from "./Copy.vue";
 
 export default {
   name: "Result",
   components: {
-    Traditional,
-    Simplified,
+    Chinese,
     Pinyin,
-    English,
-    Copy
+    English
   },
   props: ["entry"]
 };
