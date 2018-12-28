@@ -50,6 +50,6 @@ export default {
 .spinner {
   width: 100%;
   text-align: center;
+  color: #33d8dd;
 }
 </style>
-

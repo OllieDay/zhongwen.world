@@ -50,5 +50,8 @@ export default {
 form {
   width: 100%;
 }
+input:focus {
+  border-color: #33d8dd;
+}
 </style>
 

@@ -23,3 +23,10 @@ export default {
   }
 };
 </script>
+
+<style>
+::selection {
+  background: #33d8dd;
+}
+</style>
+
