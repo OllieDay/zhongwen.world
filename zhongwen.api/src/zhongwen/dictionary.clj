@@ -27,21 +27,22 @@
     (read-entries (doall (line-seq reader)))))
 
 (defn match-traditional [query]
-  #(string/includes? (:traditional %) query))
+  #(string/includes? (string/lower-case (:traditional %)) query))
 
 (defn match-simplified [query]
-  #(string/includes? (:simplified %) query))
+  #(string/includes? (string/lower-case (:simplified %)) query))
 
 (defn match-pinyin [query]
-  #(string/includes? (:pinyin %) query))
+  #(string/includes? (string/lower-case (:pinyin %)) query))
 
 (defn match-english [query]
   (fn [entry]
-    (some #(string/includes? % query) (entry :english))))
+    (some #(string/includes? (string/lower-case %) query) (entry :english))))
 
 (defn search-all [query entries]
-  (filter (some-fn (match-traditional query)
-                   (match-simplified query)
-                   (match-pinyin query)
-                   (match-english query))
-          entries))
+  (let [lower-query (string/lower-case query)]
+    (filter (some-fn (match-traditional lower-query)
+                     (match-simplified lower-query)
+                     (match-pinyin lower-query)
+                     (match-english lower-query))
+            entries)))
