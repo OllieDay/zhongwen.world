@@ -29,7 +29,7 @@ export default {
     };
   },
   methods: {
-    onSearchStarted: function(result) {
+    onSearchStarted: function() {
       this.loading = true;
     },
     onSearchEnded: function(result) {
@@ -39,7 +39,6 @@ export default {
         this.entries = result.entries;
       } else {
         // TODO: error handling
-        console.log(result.error);
       }
     }
   }
