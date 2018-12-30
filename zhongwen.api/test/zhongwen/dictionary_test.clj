@@ -62,41 +62,35 @@
 (deftest search-all-with-valid-query-traditional
   (testing "Search with valid query (traditional) returns list of entries."
     (let [entries (read-entries '("中國 中国 [Zhong1 guo2] /China/"))
-          results (search-all "中國" entries)
-          first-result (first results)]
-      (is (= (first-result :traditional "中國"))))))
+          result (first (search-all "中國" entries))]
+      (is (= (result :traditional "中國"))))))
 
 (deftest search-all-with-valid-query-simplified
   (testing "Search with valid query (simplified) returns list of entries."
     (let [entries (read-entries '("中國 中国 [Zhong1 guo2] /China/"))
-          results (search-all "中国" entries)
-          first-result (first results)]
-      (is (= (first-result :simplified "中国"))))))
+          result (first (search-all "中国" entries))]
+      (is (= (result :simplified "中国"))))))
 
 (deftest search-all-with-valid-query-pinyin
   (testing "Search with valid query (pinyin) returns list of entries."
     (let [entries (read-entries '("中國 中国 [Zhong1 guo2] /China/"))
-          results (search-all "Zhong1 guo2" entries)
-          first-result (first results)]
-      (is (= (first-result :pinyin "Zhong1 guo2"))))))
+          result (first (search-all "Zhong1 guo2" entries))]
+      (is (= (result :pinyin "Zhong1 guo2"))))))
 
 (deftest search-all-with-valid-query-pinyin-case-insensitive
   (testing "Search with valid query (pinyin, case-insensitive) returns list of entries."
     (let [entries (read-entries '("中國 中国 [Zhong1 guo2] /China/"))
-          results (search-all "ZHONG1 GUO2" entries)
-          first-result (first results)]
-      (is (= (first-result :pinyin "Zhong1 guo2"))))))
+          result (first (search-all "ZHONG1 GUO2" entries))]
+      (is (= (result :pinyin "Zhong1 guo2"))))))
 
 (deftest search-all-with-valid-query-english
   (testing "Search with valid query (english) returns list of entries."
     (let [entries (read-entries '("中國 中国 [Zhong1 guo2] /China/"))
-          results (search-all "China" entries)
-          first-result (first results)]
-      (is (= (first-result :english '("China")))))))
+          result (first (search-all "China" entries))]
+      (is (= (result :english '("China")))))))
 
 (deftest search-all-with-valid-query-english-case-insensitive
   (testing "Search with valid query (english, case-insensitive) returns list of entries."
     (let [entries (read-entries '("中國 中国 [Zhong1 guo2] /China/"))
-          results (search-all "CHINA" entries)
-          first-result (first results)]
-      (is (= (first-result :english '("China")))))))
+          result (first (search-all "CHINA" entries))]
+      (is (= (result :english '("China")))))))
