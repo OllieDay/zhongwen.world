@@ -11,6 +11,7 @@
 
 (defn search [query]
   {:status  200
+   :headers {"Content-Type" "application/json; charset=utf-8"}
    :body    (json/write-str (take limit (dictionary/search-all query entries)))})
 
 (defroutes app
