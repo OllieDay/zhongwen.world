@@ -4,7 +4,8 @@
             [compojure.route :refer :all]
             [org.httpkit.server :refer [run-server]]
             [ring.util.response :refer [resource-response]]
-            [zhongwen.dictionary :as dictionary]))
+            [zhongwen.dictionary :as dictionary])
+  (:gen-class))
 
 (def entries (dictionary/parse "/app/cedict_ts.u8"))
 (def limit 100)

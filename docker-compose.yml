@@ -2,14 +2,14 @@ version: '3.7'
 
 services:
 
-  zhongwen.api:
-    image: zhongwen.api
-    container_name: zhongwen.api
-    build: zhongwen.api
+  zhongwen.world.app:
+    image: zhongwen.world.app
+    container_name: zhongwen.world.app
+    build: .
 
-  zhongwen.nginx:
-    image: zhongwen.nginx
-    container_name: zhongwen.nginx
-    build: zhongwen.nginx
+  zhongwen.world.proxy:
+    image: zhongwen.world.proxy
+    container_name: zhongwen.world.proxy
+    build: zhongwen.world.proxy
     ports:
       - 443:443

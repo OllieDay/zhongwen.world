@@ -1,0 +1,17 @@
+Dockerfile
+docker-compose.yml
+.dockerignore
+.editorconfig
+.git
+.gitattributes
+.gitignore
+LICENSE
+README.md
+
+zhongwen.world.api/resources
+zhongwen.world.api/test
+zhongwen.world.api/target
+zhongwen.world.api/.lein-failures
+
+zhongwen.world.web/node_modules
+zhongwen.world.web/dist

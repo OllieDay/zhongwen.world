@@ -1,7 +1,7 @@
 <template>
   <a class="uk-navbar-item uk-logo" href>
     <img src="logo.svg">
-    中文
+    ZhongWen
   </a>
 </template>
 
