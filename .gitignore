@@ -1,16 +1,6 @@
-pom.xml
-pom.xml.asc
-*.jar
-*.class
-/lib/
-/classes/
-/target/
-/checkouts/
-.lein-deps-sum
-.lein-repl-history
-.lein-plugins/
-.lein-failures
-.nrepl-port
-.cpcache/
+zhongwen.world.api/resources
+zhongwen.world.api/target
+zhongwen.world.api/.lein-failures
 
-node_modules/
+zhongwen.world.web/node_modules
+zhongwen.world.web/dist
