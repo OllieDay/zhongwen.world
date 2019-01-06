@@ -1,4 +1,4 @@
-version: '3.7'
+version: "3.7"
 
 services:
 
@@ -6,10 +6,14 @@ services:
     image: zhongwen.world.app
     container_name: zhongwen.world.app
     build: .
+    restart: always
 
   zhongwen.world.proxy:
     image: zhongwen.world.proxy
     container_name: zhongwen.world.proxy
-    build: zhongwen.world.proxy
+    build:
+      context: zhongwen.world.proxy
+      dockerfile: Dockerfile.development
     ports:
       - 443:443
+    restart: always

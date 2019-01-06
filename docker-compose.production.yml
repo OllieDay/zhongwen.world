@@ -1,0 +1,32 @@
+version: "3.7"
+
+services:
+
+  zhongwen.world.certbot:
+    image: zhongwen.world.certbot
+    container_name: zhongwen.world.certbot
+    build: zhongwen.world.certbot
+    volumes:
+      - /certificates:/certificates
+    restart: always
+    environment:
+      - EMAIL=${EMAIL}
+
+  zhongwen.world.app:
+    image: zhongwen.world.app
+    container_name: zhongwen.world.app
+    build: .
+    restart: always
+
+  zhongwen.world.proxy:
+    image: zhongwen.world.proxy
+    container_name: zhongwen.world.proxy
+    build:
+      context: zhongwen.world.proxy
+      dockerfile: Dockerfile.production
+    volumes:
+      - /certificates:/certificates
+    ports:
+      - 80:80
+      - 443:443
+    restart: always

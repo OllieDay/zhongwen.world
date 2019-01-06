@@ -31,7 +31,7 @@ export default {
       const started = Date.now();
       this.$emit("search-started");
       axios
-        .get(`http://localhost/api/search/${this.terms}`)
+        .get(`/api/search/${this.terms}`)
         .then(response => {
           this.emitSearchEndedWithDelay(started, {
             success: true,
