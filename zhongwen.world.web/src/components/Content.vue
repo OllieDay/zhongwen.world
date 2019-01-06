@@ -1,5 +1,5 @@
 <template>
-  <div class="uk-container uk-container-small uk-margin-medium uk-animation-fade">
+  <div class="uk-container uk-container-small uk-margin-medium">
     <Search v-on:search-started="onSearchStarted" v-on:search-ended="onSearchEnded"/>
     <ul class="uk-list uk-list-divider"></ul>
     <div v-if="loading" class="spinner" uk-spinner="ratio: 2"></div>

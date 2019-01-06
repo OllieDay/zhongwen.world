@@ -1,5 +1,5 @@
 <template>
-  <p>No results</p>
+  <p class="uk-animation-fade">No results</p>
 </template>
 
 <script>
