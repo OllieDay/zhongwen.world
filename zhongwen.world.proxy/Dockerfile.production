@@ -1,3 +1,4 @@
 FROM nginx:1.15.8-alpine
+EXPOSE 80
 EXPOSE 443
 COPY nginx.production.conf /etc/nginx/nginx.conf
