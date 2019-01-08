@@ -1,5 +1,6 @@
 (ns zhongwen.dictionary
-  (:require [clojure.string :as string]))
+  (:require [clojure.java.io :as io]
+            [clojure.string :as string]))
 
 (defn read-tone [syllable]
   (if-let [tone (re-find #"[1-5]$" syllable)]
@@ -20,11 +21,16 @@
       nil)))
 
 (defn read-entries [lines]
-  (filter some? (map read-entry lines)))
+  (->> lines
+       (map read-entry)
+       (filter some?)))
 
 (defn parse [path]
-  (with-open [reader (clojure.java.io/reader path)]
-    (read-entries (doall (line-seq reader)))))
+  (with-open [reader (io/reader path)]
+    (-> reader
+        (line-seq)
+        (doall)
+        (read-entries))))
 
 (defn match-traditional [query]
   #(string/includes? (string/lower-case (:traditional %)) query))
@@ -37,12 +43,18 @@
 
 (defn match-english [query]
   (fn [entry]
-    (some #(string/includes? (string/lower-case %) query) (entry :english))))
+    (->> entry
+         (:english)
+         (some #(string/includes? (string/lower-case %) query)))))
+
+(defn match-any [query]
+  (some-fn (match-traditional query)
+           (match-simplified query)
+           (match-pinyin query)
+           (match-english query)))
 
 (defn search-all [query entries]
-  (let [lower-query (string/lower-case query)]
-    (filter (some-fn (match-traditional lower-query)
-                     (match-simplified lower-query)
-                     (match-pinyin lower-query)
-                     (match-english lower-query))
-            entries)))
+  (-> query
+      (string/lower-case)
+      (match-any)
+      (filter entries)))

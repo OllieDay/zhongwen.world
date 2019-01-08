@@ -13,7 +13,10 @@
 (defn search [query]
   {:status  200
    :headers {"Content-Type" "application/json; charset=utf-8"}
-   :body    (json/write-str (take limit (dictionary/search-all query entries)))})
+   :body    (->> entries
+                 (dictionary/search-all query)
+                 (take limit)
+                 (json/write-str))})
 
 (defroutes app
   (resources "/")
@@ -22,5 +25,5 @@
   (not-found (resource-response "/404.html" {:root "public"})))
 
 (defn -main [& args]
-  (org.httpkit.server/run-server app {:port 80})
+  (run-server app {:port 80})
   (println "Server started on port 80"))
