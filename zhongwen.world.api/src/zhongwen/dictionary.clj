@@ -3,9 +3,8 @@
             [clojure.string :as string]))
 
 (defn read-tone [syllable]
-  (if-let [tone (re-find #"[1-5]$" syllable)]
-    (Integer. tone)
-    nil))
+  (when-let [tone (re-find #"[1-5]$" syllable)]
+    (Integer. tone)))
 
 (defn read-tones [pinyin]
   (map read-tone (string/split pinyin #" ")))
