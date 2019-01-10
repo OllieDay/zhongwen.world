@@ -11,13 +11,12 @@
 
 (defn read-entry [line]
   (let [matches (re-matches #"(\S+)\s(\S+)\s\[([^\]]+)\]\s\/(.+)\/" line)]
-    (if (= (count matches) 5)
+    (when (= (count matches) 5)
       {:traditional (nth matches 1)
        :simplified (nth matches 2)
        :pinyin (nth matches 3)
        :english (string/split (nth matches 4) #"/")
-       :tones (read-tones (nth matches 3))}
-      nil)))
+       :tones (read-tones (nth matches 3))})))
 
 (defn read-entries [lines]
   (->> lines
