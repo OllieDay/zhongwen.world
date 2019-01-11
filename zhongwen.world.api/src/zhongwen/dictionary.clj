@@ -2,21 +2,32 @@
   (:require [clojure.java.io :as io]
             [clojure.string :as string]))
 
-(defn read-tone [syllable]
+(defn read-tone
+  "Read the tone in a `syllable`, returning 1-5 or `nil` if not valid."
+  [syllable]
   (when-let [tone (re-find #"[1-5]$" syllable)]
     (Integer. tone)))
 
-(defn read-tones [pinyin]
+(defn read-tones
+  "Read the tones for each word (separated by a space) in `pinyin`, returning a
+  list of tones 1-5 or `nil` if not valid."
+  [pinyin]
   (map read-tone (string/split pinyin #" ")))
 
-(defn read-entry [line]
+(defn read-entry
+  "Read the entry in `line`, returning `nil` if not valid.
+  A valid entry is as follows:
+  traditional simplified [pinyin] /english/english/.../
+  For example:
+  國 国 [guo2] /country/nation/state/national/CL:個|个[ge4]/"
+  [line]
   (let [matches (re-matches #"(\S+)\s(\S+)\s\[([^\]]+)\]\s\/(.+)\/" line)]
     (when (= (count matches) 5)
       {:traditional (nth matches 1)
-       :simplified (nth matches 2)
-       :pinyin (nth matches 3)
-       :english (string/split (nth matches 4) #"/")
-       :tones (read-tones (nth matches 3))})))
+       :simplified  (nth matches 2)
+       :pinyin      (nth matches 3)
+       :english     (string/split (nth matches 4) #"/")
+       :tones       (read-tones (nth matches 3))})))
 
 (defn read-entries [lines]
   (->> lines
@@ -52,7 +63,8 @@
            (match-english query)))
 
 (defn score
-  "Score `query` against `entry` on a scale of 0 to 1 based on the percentage of matched text."
+  "Score `query` against `entry` on a scale of 0 to 1 based on the percentage of
+  matched text."
   [query entry]
   (letfn [(score-value [value]
             (let [lower-value (string/lower-case value)
