@@ -51,8 +51,18 @@
            (match-pinyin query)
            (match-english query)))
 
+(defn score
+  "Score `query` against `entry` on a scale of 0 to 1 based on the percentage of matched text."
+  [query entry]
+  (letfn [(score-value [value]
+            (let [lower-value (string/lower-case value)
+                  occurrences (count (re-seq (re-pattern query) value))]
+              (float (/ (* (count query) occurrences) (count value)))))]
+    (max (score-value (:traditional entry))
+         (score-value (:simplified entry))
+         (score-value (:pinyin entry))
+         (apply max (map score-value (:english entry))))))
+
 (defn search-all [query entries]
-  (-> query
-      (string/lower-case)
-      (match-any)
-      (filter entries)))
+  (let [results (-> query (string/lower-case) (match-any) (filter entries))]
+        (reverse (sort-by (partial score (string/lower-case query)) results))))
