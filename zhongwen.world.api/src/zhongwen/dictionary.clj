@@ -1,6 +1,6 @@
 (ns zhongwen.dictionary
   (:require [clojure.java.io :as io]
-            [clojure.string :as string]))
+            [clojure.string :as s]))
 
 (defn read-tone
   "Read the tone in a `syllable`, returning 1-5 or `nil` if not valid."
@@ -12,7 +12,7 @@
   "Read the tones for each word (separated by a space) in `pinyin`, returning a
   list of tones 1-5 or `nil` if not valid."
   [pinyin]
-  (map read-tone (string/split pinyin #" ")))
+  (map read-tone (s/split pinyin #" ")))
 
 (defn read-entry
   "Read the entry in `line`, returning `nil` if not valid.
@@ -26,7 +26,7 @@
       {:traditional (nth matches 1)
        :simplified  (nth matches 2)
        :pinyin      (nth matches 3)
-       :english     (string/split (nth matches 4) #"/")
+       :english     (s/split (nth matches 4) #"/")
        :tones       (read-tones (nth matches 3))})))
 
 (defn read-entries [lines]
@@ -42,19 +42,19 @@
         (read-entries))))
 
 (defn match-traditional [query]
-  #(string/includes? (string/lower-case (:traditional %)) query))
+  #(s/includes? (s/lower-case (:traditional %)) query))
 
 (defn match-simplified [query]
-  #(string/includes? (string/lower-case (:simplified %)) query))
+  #(s/includes? (s/lower-case (:simplified %)) query))
 
 (defn match-pinyin [query]
-  #(string/includes? (string/lower-case (:pinyin %)) query))
+  #(s/includes? (s/lower-case (:pinyin %)) query))
 
 (defn match-english [query]
   (fn [entry]
     (->> entry
          (:english)
-         (some #(string/includes? (string/lower-case %) query)))))
+         (some #(s/includes? (s/lower-case %) query)))))
 
 (defn match-any [query]
   (some-fn (match-traditional query)
@@ -67,7 +67,7 @@
   matched text."
   [query entry]
   (letfn [(score-value [value]
-            (let [lower-value (string/lower-case value)
+            (let [lower-value (s/lower-case value)
                   occurrences (count (re-seq (re-pattern query) value))]
               (float (/ (* (count query) occurrences) (count value)))))]
     (max (score-value (:traditional entry))
@@ -76,5 +76,5 @@
          (apply max (map score-value (:english entry))))))
 
 (defn search-all [query entries]
-  (let [results (-> query (string/lower-case) (match-any) (filter entries))]
-        (reverse (sort-by (partial score (string/lower-case query)) results))))
+  (let [results (-> query (s/lower-case) (match-any) (filter entries))]
+        (reverse (sort-by (partial score (s/lower-case query)) results))))
