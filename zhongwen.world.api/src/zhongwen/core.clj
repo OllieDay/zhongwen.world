@@ -10,13 +10,18 @@
 (def entries (dictionary/parse "/app/cedict_ts.u8"))
 (def limit 100)
 
+; Response should not contain nested :base and :norm so flatten map.
+(defn create-response [entries]
+  (map #(assoc (:base %) :tones (:tones %)) entries))
+
 (defn search [query]
   {:status  200
    :headers {"Content-Type" "application/json; charset=utf-8"}
    :body    (->> entries
                  (dictionary/search-all query)
                  (take limit)
-                 (json/write-str))})
+                 create-response
+                 json/write-str)})
 
 (defroutes app
   (resources "/")
