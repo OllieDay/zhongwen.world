@@ -7,6 +7,9 @@
   (when-let [tone (re-find #"[1-5]$" syllable)]
     (Integer. tone)))
 
+(defn read-tones [matches]
+  (map read-tone (s/split (nth matches 3) #" ")))
+
 (defn read-base-traditional [matches]
   (nth matches 1))
 
@@ -31,9 +34,6 @@
 (defn read-norm-english [matches]
   (->> matches read-base-english (map s/lower-case)))
 
-(defn read-tones [matches]
-  (map read-tone (s/split (nth matches 3) #" ")))
-
 (defn read-base-entry [matches]
   {:traditional (read-base-traditional matches)
    :simplified (read-base-simplified matches)
@@ -53,20 +53,19 @@
 ;   :norm
 ;     Normalized entry with lower-case text.
 ;     This is used to speed up case-insensitive searches.
-(defn matches-to-entry [matches]
+(defn matches->entry [matches]
   {:base (read-base-entry matches)
    :norm (read-norm-entry matches)
    :tones (read-tones matches)})
 
 ; A valid line is as follows:
 ;   traditional simplified [pinyin] /english/english/.../
-;
 ; Example:
 ;   國 国 [guo2] /country/nation/state/national/CL:個|个[ge4]/"
 (defn read-entry [line]
   (let [matches (re-matches #"(\S+)\s(\S+)\s\[([^\]]+)\]\s\/(.+)\/" line)]
     (when (= (count matches) 5)
-      (matches-to-entry matches))))
+      (matches->entry matches))))
 
 (defn read-entries [lines]
   (->> lines
@@ -80,37 +79,78 @@
         doall
         read-entries)))
 
-; Matches are always case-insensitive so compare with :norm
+(defn subsumes?
+  [main sub]
+    (some
+      (partial = (seq sub))
+      (partition (count sub) 1 main)))
 
-(defn match-traditional [query]
-  #(s/includes? (get-in % [:norm :traditional]) query))
+(defn traditional-part? [query]
+  #(s/includes? (-> % :norm :traditional) query))
 
-(defn match-simplified [query]
-  #(s/includes? (get-in % [:norm :simplified]) query))
+(defn simplified-part? [query]
+  #(s/includes? (-> % :norm :simplified) query))
 
-(defn match-pinyin [query]
-  #(s/includes? (get-in % [:norm :pinyin]) query))
+(defn pinyin-part? [query]
+  #(s/includes? (-> % :norm :pinyin) query))
 
-(defn match-english [query]
+(defn english-part? [query]
   (fn [entry]
-    (some #(s/includes? % query) (get-in entry [:norm :english]))))
+    (->> entry :norm :english
+         (some #(s/includes? % query)))))
 
-(defn match-any [query]
-  (some-fn (match-traditional query)
-           (match-simplified query)
-           (match-pinyin query)
-           (match-english query)))
+(defn traditional-full? [query]
+  #(= (-> % :norm :traditional) query))
+
+(defn simplified-full? [query]
+  #(= (-> % :norm :simplified) query))
+
+(defn pinyin-full? [query]
+  #(subsumes? (s/split (-> % :norm :pinyin) #" ") (s/split query #" ")))
+
+(defn english-full? [query]
+  (fn [entry]
+    (->> entry :norm :english
+         (some #(subsumes? (s/split % #" ") (s/split query #" "))))))
+
+(defn match-part [query]
+  (some-fn (traditional-part? query)
+           (simplified-part? query)
+           (pinyin-part? query)
+           (english-part? query)))
+
+(defn match-full [query]
+  (some-fn (traditional-full? query)
+           (simplified-full? query)
+           (pinyin-full? query)
+           (english-full? query)))
 
 ; Scoring is done on a scale of 0 to 1 based on percentage of text matched.
 (defn score [query entry]
   (letfn [(score-value [value]
             (let [occurrences (count (re-seq (re-pattern query) value))]
               (float (/ (* (count query) occurrences) (count value)))))]
-    (max (score-value (get-in entry [:norm :traditional]))
-         (score-value (get-in entry [:norm :simplified]))
-         (score-value (get-in entry [:norm :pinyin]))
-         (apply max (map score-value (get-in entry [:norm :english]))))))
+    (max (score-value (-> entry :norm :traditional))
+         (score-value (-> entry :norm :simplified))
+         (score-value (-> entry :norm :pinyin))
+         (apply max (map score-value (-> entry :norm :english))))))
 
+(defn search [pred query entries]
+  (-> query s/lower-case pred (filter entries)))
+
+(defn search-full [query entries]
+  (search match-full query entries))
+
+(defn search-part [query entries]
+  (search match-part query entries))
+
+; Searches full and partial matches, returning only full matches
+; if any exist, otherwise returning partial matches. Full matches are
+; preferred in order to prevent a search for "go" returning less-relevant
+; results such as "goat" and "gone".
 (defn search-all [query entries]
-  (let [results (-> query (s/lower-case) (match-any) (filter entries))]
-        (reverse (sort-by (partial score (s/lower-case query)) results))))
+  (let [full-matches (search-full query entries)
+        part-matches (search-part query entries)
+        matches (or (seq full-matches) part-matches)]
+    (reverse (sort-by (partial score (s/lower-case query)) matches))))
+
