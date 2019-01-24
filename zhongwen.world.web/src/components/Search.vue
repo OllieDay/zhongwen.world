@@ -16,30 +16,18 @@ export default {
     };
   },
   methods: {
-    emitSearchEndedWithDelay: function(started, data) {
-      // Add some artificial latency for very short requests to prevent the loading animation appearing too briefly.
-      const latency = 500;
-      const ended = Date.now();
-      const elapsed = ended - started;
-      let delay = 0;
-      if (elapsed < latency) {
-        delay = latency - elapsed;
-      }
-      setTimeout(() => this.$emit("search-ended", data), delay);
-    },
     search: function() {
-      const started = Date.now();
       this.$emit("search-started");
       axios
         .get(`/api/search/${this.terms}`)
         .then(response => {
-          this.emitSearchEndedWithDelay(started, {
+          this.$emit("search-ended", {
             success: true,
             entries: response.data
           });
         })
         .catch(response => {
-          this.emitSearchEndedWithDelay(started, {
+          this.$emit("search-ended", {
             success: false,
             error: response
           });
